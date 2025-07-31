@@ -23,7 +23,7 @@ spec:
         command: ["sh", "-c", "echo Waiting...; sleep 5"]
       containers:
       - name: web-main
-        image: ${{DOCKER_HUB_USER}}/my-app:latest
+        image: ${{DOCKER_HUB_USER}}/real-webapp:latest
         ports:
         - containerPort: 5000
         livenessProbe:
