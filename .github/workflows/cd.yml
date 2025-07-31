@@ -1,0 +1,23 @@
+name: Deploy to Minikube
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: self-hosted  # Your Minikube-connected runner
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Set image tag
+        run: |
+          sed -i 's|image: .*|image: praveengangala/my-app:latest|' deployment.yaml
+
+      - name: Apply to Minikube
+        run: |
+          kubectl apply -f deployment.yaml
+          kubectl rollout status deployment/my-app
