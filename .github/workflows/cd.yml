@@ -17,5 +17,5 @@ jobs:
 
       - name: Apply to Minikube
         run: |
-          kubectl apply -f deployment.yaml
+          kubectl apply -f k8s/deployment.yaml
           kubectl rollout status deployment/my-app
