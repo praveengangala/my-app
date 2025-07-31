@@ -13,7 +13,7 @@ jobs:
 
       - name: Set image tag
         run: |
-          sed -i 's|image: .*|image: praveengangala/my-app:latest|' deployment.yaml
+          sed -i 's|image: .*|image: praveengangala/my-app:latest|' k8s/deployment.yaml
 
       - name: Apply to Minikube
         run: |
