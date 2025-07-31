@@ -1,40 +1,54 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: real-webapp
+  name: my-app
+  labels:
+    app: my-app
 spec:
   replicas: 2
-  strategy:
-    type: RollingUpdate
-    rollingUpdate:
-      maxUnavailable: 1
-      maxSurge: 1
   selector:
     matchLabels:
-      app: real-webapp
+      app: my-app
   template:
     metadata:
       labels:
-        app: real-webapp
+        app: my-app
     spec:
       initContainers:
-      - name: init-config
+      - name: init-my-service
         image: busybox
-        command: ["sh", "-c", "echo Waiting...; sleep 5"]
+        command: ['sh', '-c', 'echo Initializing... && sleep 5']
+        # This simulates some pre-start work, like DB migrations or config setup
+
       containers:
-      - name: web-main
-        image: ${{DOCKER_HUB_USER}}/real-webapp:latest
+      - name: my-app-container
+        image: praveengangala/my-app:latest
         ports:
         - containerPort: 5000
-        livenessProbe:
-          httpGet: { path: "/", port: 5000 }
-          initialDelaySeconds: 10
-          periodSeconds: 10
         readinessProbe:
-          httpGet: { path: "/", port: 5000 }
+          httpGet:
+            path: /healthz       # Your app should respond 200 here for ready state
+            port: 5000
           initialDelaySeconds: 5
-          periodSeconds: 5
-      - name: sidecar-logger
-        image: busybox
-        command: ["sh","-c","while true; do echo $(date) sidecar; sleep 10; done"]
+          periodSeconds: 10
+          failureThreshold: 3
+        livenessProbe:
+          httpGet:
+            path: /healthz       # Your app should respond 200 here for alive state
+            port: 5000
+          initialDelaySeconds: 15
+          periodSeconds: 20
+          failureThreshold: 3
+        resources:
+          requests:
+            memory: "128Mi"
+            cpu: "250m"
+          limits:
+            memory: "256Mi"
+            cpu: "500m"
+        env:
+          - name: ENVIRONMENT
+            value: "production"
+        # Add volumeMounts here if your app needs config or persistent data
 
+      # Add volumes here if init container or app container needs shared data
