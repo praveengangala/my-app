@@ -18,7 +18,7 @@ spec:
       - name: init-my-service
         image: busybox
         command: ['sh', '-c', 'echo Initializing... && sleep 5']
-        # This simulates some pre-start work, like DB migrations or config setup
+        # Simulates pre-start work
 
       containers:
       - name: my-app-container
@@ -27,18 +27,21 @@ spec:
         - containerPort: 5000
         readinessProbe:
           httpGet:
-            path: /healthz       # Your app should respond 200 here for ready state
+            path: /healthz         # Make sure your app exposes this endpoint!
             port: 5000
-          initialDelaySeconds: 5
+          initialDelaySeconds: 10  # Wait longer for your app to start up
           periodSeconds: 10
           failureThreshold: 3
+          successThreshold: 1
+          timeoutSeconds: 2
         livenessProbe:
           httpGet:
-            path: /healthz       # Your app should respond 200 here for alive state
+            path: /healthz
             port: 5000
-          initialDelaySeconds: 15
+          initialDelaySeconds: 30  # Give time for app to be healthy before checks
           periodSeconds: 20
           failureThreshold: 3
+          timeoutSeconds: 2
         resources:
           requests:
             memory: "128Mi"
@@ -49,6 +52,3 @@ spec:
         env:
           - name: ENVIRONMENT
             value: "production"
-        # Add volumeMounts here if your app needs config or persistent data
-
-      # Add volumes here if init container or app container needs shared data
