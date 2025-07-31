@@ -25,4 +25,4 @@ jobs:
           context: ./my-app           # directory where Dockerfile is
           file: ./my-app/Dockerfile
           push: true
-          tags: yourdockerhubusername/my-app:latest
+          tags: praveengangala/my-app:latest
