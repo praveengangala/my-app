@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: real-webapp
+spec:
+  replicas: 2
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+      maxSurge: 1
+  selector:
+    matchLabels:
+      app: real-webapp
+  template:
+    metadata:
+      labels:
+        app: real-webapp
+    spec:
+      initContainers:
+      - name: init-config
+        image: busybox
+        command: ["sh", "-c", "echo Waiting...; sleep 5"]
+      containers:
+      - name: web-main
+        image: ${{DOCKER_HUB_USER}}/real-webapp:latest
+        ports:
+        - containerPort: 5000
+        livenessProbe:
+          httpGet: { path: "/", port: 5000 }
+          initialDelaySeconds: 10
+          periodSeconds: 10
+        readinessProbe:
+          httpGet: { path: "/", port: 5000 }
+          initialDelaySeconds: 5
+          periodSeconds: 5
+      - name: sidecar-logger
+        image: busybox
+        command: ["sh","-c","while true; do echo $(date) sidecar; sleep 10; done"]
+
