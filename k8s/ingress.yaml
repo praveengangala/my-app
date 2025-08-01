@@ -1,19 +1,19 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: real-webapp-ingress
+  name: my-app-ingress
   annotations:
-    kubernetes.io/ingress.class: traefik
+    nginx.ingress.kubernetes.io/rewrite-target: /
 spec:
   rules:
-  - host: real-webapp.local
-    http:
-      paths:
-      - path: /
-        pathType: Prefix
-        backend:
-          service:
-            name: real-webapp-svc
-            port:
-              number: 80
+    - host: my-app.local
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: my-app-service
+                port:
+                  number: 80
 
